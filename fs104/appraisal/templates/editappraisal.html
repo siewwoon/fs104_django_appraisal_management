@@ -1,0 +1,43 @@
+{% load crispy_forms_tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <title>Title</title>
+    <style>
+        input[type="text"]{
+            margin-left: 40px;
+        }
+        #id_year{
+            margin-left: 77px;
+        }
+        label{
+            margin-left: 10px;
+            font-weight: 600;
+        }
+        #id_employee_ID{
+            margin-left: 17px;
+        }
+        #id_rating{
+            margin-left: 65px;
+        }
+        .savebtn{
+            margin-left: 30px;
+        }
+        form{
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<center><h4>Edit Employee Appraisal</h4></center>
+<form method="POST" class="post-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="savebtn">Save</button>
+    </form>
+</body>
+</html>

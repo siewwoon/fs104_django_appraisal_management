@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+
+        .tab {
+  display: flex;
+  justify-content: space-evenly;
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+}
+
+/* Style the buttons that are used to open the tab content */
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+
+.tabcontent {
+  animation: fadeEffect 1s; /* Fading effect takes 1 second */
+}
+
+/* Go from zero to full opacity */
+@keyframes fadeEffect {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+.vl {
+  border-left: 6px solid black;
+}
+
+input[type=text], select {
+  width: 30%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.btn {
+  width: 30%;
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#employee_id {
+    margin-left: 50%;
+}
+
+#employebtn{
+         margin-left: 50%;
+ }
+
+.card {
+  /* Add shadows to create the "card" effect */
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  height: 200px;
+  transition: 0.3s;
+
+}
+
+/* On mouse-over, add a deeper shadow */
+.card:hover {
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+/* Add some padding inside the card container */
+.container {
+  padding: 2px 16px;
+}
+
+.dtlbtn{
+      width: 70px;
+  background-color: #4CAF50;
+  height: 100px;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+    </style>
+
+
+</head>
+<body>
+
+
+<div class="tab">
+  <button class="tablinks" onclick="openCity(event, 'London')" id="defaultOpen">Enter as manager</button>
+    <div class="vl"></div>
+  <button class="tablinks" onclick="openCity(event, 'Paris')">Enter as Employee</button>
+</div>
+
+<!-- Tab content -->
+<div id="London" class="tabcontent">
+<form id="managerdata" method="post">
+            {% csrf_token %}
+    <input type="text" id="manager_id" name="manager_id" placeholder="manager ID"><br>
+    <button class="btn" id="managerbtn">Submit</button>
+    </form>
+</div>
+
+<div id="Paris" class="tabcontent">
+    <form id="employeedata" method="post">
+            {% csrf_token %}
+    <input type="text" id="employee_id" name="employee_id" placeholder="Employee ID"><br>
+    <button class="btn" id="employebtn">Submit</button>
+        </form>
+</div>
+
+<div id="card_wraper">
+
+</div>
+
+
+</body>
+
+<script>
+
+    $("#card_wraper").hide();
+    function openCity(evt, cityName) {
+  // Declare all variables
+        $("#card_wraper").empty();
+  var i, tabcontent, tablinks;
+
+  // Get all elements with class="tabcontent" and hide them
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+
+  // Get all elements with class="tablinks" and remove the class "active"
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+
+  // Show the current tab, and add an "active" class to the button that opened the tab
+  document.getElementById(cityName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+
+
+</script>
+
+<script>
+// Get the element with id="defaultOpen" and click on it
+document.getElementById("defaultOpen").click();
+</script>
+
+<script>
+
+    $("form#managerdata").submit(function (e){
+        e.preventDefault();
+        var formData = new FormData(this);
+            $.ajax({
+        url:"{% url 'getappraisal' %}",
+        type: 'POST',
+        data: formData,
+        success: function (data) {
+            console.log(data);
+            var card_wraper=$("#card_wraper")
+            card_wraper.empty();
+           for (var i = 0; i < data.length; i++) {
+
+               var carditem="<div class='card'>"+"<div class='container'>"+"<h4><b>Employee Name: </b>"+ data[i].employee_name+"</h4>"+
+                   "<h4><b>Department Name: </b>"+data[i].department_name+"</h4>"+"<h4><b>Rating: </b>"+data[i].rating+"</h4>"+"</div>"+
+                   "<a href="+'/appraisaldetail?id='+data[i].appraisal_id+" class='dtlbtn'>"+"See Detail</a>"
+                   "</div>"
+            card_wraper.append(carditem)
+           }
+           card_wraper.show();
+
+        },
+        cache: false,
+        contentType: false,
+        processData: false
+    });
+    });
+
+
+     $("form#employeedata").submit(function (e){
+        e.preventDefault();
+        var formData = new FormData(this);
+            $.ajax({
+        url:"{% url 'getappraisal' %}",
+        type: 'POST',
+        data: formData,
+        success: function (data) {
+            console.log(data);
+            var card_wraper=$("#card_wraper")
+            card_wraper.empty();
+           for (var i = 0; i < data.length; i++) {
+
+               var carditem="<div class='card'>"+"<div class='container'>"+"<h4><b>Employee Name: </b>"+ data[i].employee_name+"</h4>"+
+                   "<h4><b>Department Name: </b>"+data[i].department_name+"</h4>"+"<h4><b>Rating: </b>"+data[i].rating+"</h4>"+
+                   "<h4><b>Year: </b>"+data[i].review_year+"</h4>"+"<h4><b>Objective: </b>"+data[i].objective+"</h4>"
+                   "</div>"+
+
+                   "</div>"
+                   card_wraper.append(carditem)
+           }
+           card_wraper.show();
+
+        },
+        cache: false,
+        contentType: false,
+        processData: false
+    });
+    });
+
+
+
+
+</script>
+
+</html>
